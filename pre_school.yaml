@@ -1,0 +1,51 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pre-school
+  labels:
+    web: pre-school
+spec:
+  minReadySeconds: 15
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 50%
+  selector:
+    matchLabels:
+      web: pre-school
+
+  template:
+    metadata:
+      name: pre-school-pod
+      labels:
+        web: pre-school
+    spec:
+      containers:
+        - name: pre-school-container
+          image: shaikkhajaibrahim/preschool:1.1
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 80
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pre-school-svs
+spec:
+  selector:
+    web: pre-school
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
